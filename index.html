@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#faf7f0">
+<meta name="description" content="Balkongträdgård – Bandhagen, Stockholm. Karta, plantor, såschema, gödsling och dagbok.">
+<title>🌿 Balkongträdgård – Bandhagen</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+
+<!-- Länk till utseendet (filen stil.css i samma mapp) -->
+<link rel="stylesheet" href="stil.css">
+</head>
+<body>
+
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  SÅ HÄR REDIGERAR DU SIDAN                                    ║
+  ║                                                              ║
+  ║  Du behöver inga program. Öppna denna fil i en               ║
+  ║  textredigerare, ändra texten inom "citattecken", spara.     ║
+  ║                                                              ║
+  ║  • All din data ligger längre ner i denna fil, i avsnittet   ║
+  ║    "DATA".                                                   ║
+  ║  • Varje växt är en rad mellan { }. Ändra texten i "...".     ║
+  ║  • Ny växt: kopiera en hel rad och ändra den.                ║
+  ║                                                              ║
+  ║  Tre filer hör ihop (lägg alla i samma mapp):                ║
+  ║    index.html  – denna fil: innehåll + din data              ║
+  ║    stil.css    – utseendet (färger, layout)                  ║
+  ║    skript.js   – ritar upp sidan (behöver inte ändras)       ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+
+<!-- Sidan byggs in i denna ruta automatiskt -->
+<div id="app"></div>
+
+<script>
+"use strict";
+
+/* ════════════════════════════════════════════════════════════════
+   DATA – ÄNDRA HÄR
+   Detta är all information på sidan. Ändra texten inom "citattecken".
+   ════════════════════════════════════════════════════════════════ */
+
+/* --- 1. PLANTOR (fliken "Plantor") ---
+   emoji  = liten bild      name = växtens namn       variety = sort
+   light  = "full" (full sol) / "part" (halvskugga) / "shade" (sval)
+   type   = "pre" (förodlas inne) / "direct" (sås direkt ute)
+   date   = utplanterings- eller sådatum
+   avhard = avhärdningsdatum, "–" om det inte gäller
+   (dateOrder och avhardOrder styr bara sorteringen – lägre = tidigare) */
+const PLANTS = [
+  { emoji:"🍅", name:"Tomat",         variety:"Promyk",               light:"full",  type:"pre",    date:"15–20 maj",    dateOrder:3, avhard:"1–5 maj",   avhardOrder:2 },
+  { emoji:"🍅", name:"Busktomat",     variety:"Balkonzauber",         light:"full",  type:"pre",    date:"15–20 maj",    dateOrder:3, avhard:"1–5 maj",   avhardOrder:2 },
+  { emoji:"🥒", name:"Druvgurka",     variety:"Vorgebirgstrauben",    light:"full",  type:"pre",    date:"20–25 maj",    dateOrder:4, avhard:"8–12 maj",  avhardOrder:4 },
+  { emoji:"🌿", name:"Basilika",      variety:"Genovese",             light:"part",  type:"pre",    date:"20–25 maj",    dateOrder:4, avhard:"10–14 maj", avhardOrder:5 },
+  { emoji:"🌱", name:"Gräslök",       variety:"Medium Leaf",          light:"part",  type:"pre",    date:"1–10 maj",     dateOrder:1, avhard:"10–15 apr", avhardOrder:1 },
+  { emoji:"🌿", name:"Pepparmynta",   variety:"-",                    light:"part",  type:"pre",    date:"1–10 maj",     dateOrder:1, avhard:"10–15 apr", avhardOrder:1 },
+  { emoji:"🌿", name:"Persilja",      variety:"Moskrul 2",            light:"part",  type:"pre",    date:"1–10 maj",     dateOrder:1, avhard:"10–15 apr", avhardOrder:1 },
+  { emoji:"🍓", name:"Jordgubbar",    variety:"Mara de Bois",         light:"full",  type:"pre",    date:"1–10 maj",     dateOrder:1, avhard:"10–15 apr", avhardOrder:1 },
+  { emoji:"🍓", name:"Jordgubbar",    variety:"Ostara",               light:"full",  type:"pre",    date:"1–10 maj",     dateOrder:1, avhard:"10–15 apr", avhardOrder:1 },
+  { emoji:"🌸", name:"Rosenskära",    variety:"-",                    light:"full",  type:"pre",    date:"10–15 maj",    dateOrder:2, avhard:"20–25 apr", avhardOrder:2 },
+  { emoji:"🌾", name:"Pampagräs",     variety:"-",                    light:"full",  type:"pre",    date:"15–20 maj",    dateOrder:3, avhard:"1–5 maj",   avhardOrder:2 },
+  { emoji:"🌺", name:"Kinesisk aster",variety:"-",                    light:"full",  type:"pre",    date:"15–20 maj",    dateOrder:3, avhard:"1–5 maj",   avhardOrder:2 },
+  { emoji:"💜", name:"Lavendel",      variety:"-",                    light:"full",  type:"pre",    date:"1–15 juni",    dateOrder:6, avhard:"20–25 maj", avhardOrder:6 },
+  { emoji:"🌼", name:"Tagetes",       variety:"Lågväxande",           light:"full",  type:"pre",    date:"15–20 maj",    dateOrder:3, avhard:"1–5 maj",   avhardOrder:2 },
+  { emoji:"🌼", name:"Tagetes",       variety:"Högväxande",           light:"full",  type:"pre",    date:"15–20 maj",    dateOrder:3, avhard:"1–5 maj",   avhardOrder:2 },
+  { emoji:"🌻", name:"Ringblomma",    variety:"-",                    light:"full",  type:"direct", date:"25 maj–1 jun", dateOrder:5, avhard:"–",         avhardOrder:0 },
+  { emoji:"🌿", name:"Dill",          variety:"Como",                 light:"part",  type:"direct", date:"10–20 maj",    dateOrder:2, avhard:"–",         avhardOrder:0 },
+  { emoji:"🥬", name:"Plocksallat",   variety:"Rekord",               light:"shade", type:"direct", date:"1–10 maj",     dateOrder:1, avhard:"–",         avhardOrder:0 },
+  { emoji:"🥬", name:"Plocksallat",   variety:"Black Seeded Simpson", light:"shade", type:"direct", date:"1–10 maj",     dateOrder:1, avhard:"–",         avhardOrder:0 },
+  { emoji:"🌿", name:"Bladdill",      variety:"Bouquet",              light:"shade", type:"direct", date:"1–10 maj",     dateOrder:1, avhard:"–",         avhardOrder:0 },
+  { emoji:"🟢", name:"Märgärt",       variety:"Lincoln",              light:"part",  type:"direct", date:"10–20 maj",    dateOrder:2, avhard:"–",         avhardOrder:0 },
+];
+
+/* --- 2. ZONER PÅ KARTAN (visas när man trycker på en zon) ---
+   label = rubrik   note = kort text   light = ljusförhållande
+   items = lista på vad som växer där */
+const ZONE_DETAILS = {
+  bloomlada:  { label:"🌿 Vertikal blomlåda",   note:"Full sol · närmast dörren",       light:"full", items:["Plocksallat (Rekord)","Plocksallat (Black Seeded Simpson)","Bladdill (Bouquet)","Persilja (Moskrul 2)"] },
+  plastlada:  { label:"🟢 Plastlåda / Märgärt", note:"Längs räcket · spaljé",           light:"part", items:["Märgärt (Lincoln)","Pinnar + jutetråd"] },
+  vaxttorn:   { label:"🌀 Växttorn",            note:"6 staplade krukor · halvskugga",  light:"part", items:["Jordgubbar (Mara de Bois)","Jordgubbar (Ostara)"] },
+  smakrukor:  { label:"🪴 Krukor",              note:"Terrakotta + plast · halvskugga", light:"part", items:["Rosenskära","Pepparmynta","Krasse","Tagetes","Dill (Como)","Lavendel"] },
+  pallkrage:  { label:"🏡 Pallkrage + Drivhus", note:"100×50×40 · drivhus 150 cm",      light:"full", items:["Busktomat (Balkonzauber)","Ringblomma"] },
+  gurkkrukor: { label:"🥒 Gurkkrukor",          note:"Egna krukor vid soffan · pinne",  light:"full", items:["Druvgurka (Vorgebirgstrauben)","Låt sidoskott växa fritt"] },
+};
+
+/* --- 3. SÅSCHEMA (fliken "Såschema") ---
+   Siffrorna är månadsnummer: 1=jan, 2=feb ... 12=dec
+   indoor  = månader då växten förodlas inne
+   outdoor = månader då den sås direkt ute
+   harvest = skörd- eller blomningsmånader */
+const SCHEMA_DATA = [
+  { emoji:"🍅", name:"Tomat (Promyk)",                    type:"pre",    indoor:[2,3,4],     outdoor:[],            harvest:[7,8,9,10] },
+  { emoji:"🍅", name:"Busktomat (Balkonzauber)",          type:"pre",    indoor:[2,3,4],     outdoor:[],            harvest:[6,7,8,9] },
+  { emoji:"🥒", name:"Druvgurka (Vorgebirgstrauben)",     type:"pre",    indoor:[5,6],       outdoor:[6],           harvest:[8,9] },
+  { emoji:"🌿", name:"Basilika (Genovese)",               type:"pre",    indoor:[2,3,4,5],   outdoor:[],            harvest:[7,8] },
+  { emoji:"🌱", name:"Gräslök (Medium Leaf)",             type:"pre",    indoor:[3,4],       outdoor:[5,6,7,8,10],  harvest:[6,7] },
+  { emoji:"🌿", name:"Pepparmynta",                       type:"pre",    indoor:[2,3],       outdoor:[],            harvest:[6,7,8,9] },
+  { emoji:"🌿", name:"Persilja (Moskrul 2)",              type:"direct", indoor:[],          outdoor:[3,4,5,6,8,9], harvest:[3,4,5,6,7,8,9,10] },
+  { emoji:"🍓", name:"Jordgubbar (Mara de Bois)",         type:"pre",    indoor:[],          outdoor:[3,4],         harvest:[6,7] },
+  { emoji:"🍓", name:"Jordgubbar (Ostara)",               type:"pre",    indoor:[],          outdoor:[3,4],         harvest:[6,7,8] },
+  { emoji:"🌸", name:"Rosenskära",                        type:"pre",    indoor:[3,4],       outdoor:[5,6],         harvest:[7,8,9,10] },
+  { emoji:"🌾", name:"Pampagräs",                         type:"pre",    indoor:[3,4,5],     outdoor:[],            harvest:[8,9,10,11] },
+  { emoji:"🌺", name:"Kinesisk aster",                    type:"pre",    indoor:[3,4],       outdoor:[5],           harvest:[7,8,9] },
+  { emoji:"💜", name:"Lavendel",                          type:"pre",    indoor:[2,3,4],     outdoor:[],            harvest:[7,8] },
+  { emoji:"🌼", name:"Tagetes (Lågväxande)",              type:"pre",    indoor:[3,4,5],     outdoor:[6],           harvest:[6,7,8,9,10] },
+  { emoji:"🌼", name:"Tagetes (Högväxande)",              type:"pre",    indoor:[3,4,5],     outdoor:[6],           harvest:[6,7,8,9,10] },
+  { emoji:"🌻", name:"Ringblomma",                        type:"direct", indoor:[],          outdoor:[4,5,6,9,10],  harvest:[6,7,8,9] },
+  { emoji:"🌿", name:"Dill (Como)",                       type:"direct", indoor:[],          outdoor:[4,5,6],       harvest:[8] },
+  { emoji:"🥬", name:"Plocksallat (Rekord)",              type:"direct", indoor:[],          outdoor:[4,5,6],       harvest:[6,7,8,9] },
+  { emoji:"🥬", name:"Plocksallat (Black Seeded Simpson)",type:"direct", indoor:[],          outdoor:[4,5,6],       harvest:[6,7,8,9] },
+  { emoji:"🌿", name:"Bladdill (Bouquet)",                type:"direct", indoor:[],          outdoor:[4,5,6,7,10,11], harvest:[6,7,8,9,10] },
+  { emoji:"🟢", name:"Märgärt (Lincoln)",                 type:"direct", indoor:[5],         outdoor:[5,6],         harvest:[8,9] },
+];
+
+/* --- 4. GÖDSLING (fliken "Gödsling") ---
+   bokashi/nassle/hons = hur bra metoden passar, 0–3 (3 = bäst) */
+const GODSLING_DATA = [
+  { emoji:"🍅", name:"Tomat (Promyk)",                    period:"Jun–Aug", interval:"Var 10–14 dag", bokashi:3, nassle:3, hons:2, note:"Kräver näring under blomning" },
+  { emoji:"🍅", name:"Busktomat (Balkonzauber)",          period:"Jun–Aug", interval:"Var 10–14 dag", bokashi:3, nassle:3, hons:2, note:"Börja vid första blomknopp" },
+  { emoji:"🥒", name:"Druvgurka (Vorgebirgstrauben)",     period:"Jun–Aug", interval:"Var 7–10 dag",  bokashi:3, nassle:3, hons:2, note:"Hungrig – nässelvatten under blomning" },
+  { emoji:"🌿", name:"Basilika (Genovese)",               period:"Jun–Aug", interval:"Var 3–4 v",     bokashi:2, nassle:1, hons:1, note:"Lite näring – för mycket ger sämre smak" },
+  { emoji:"🌱", name:"Gräslök (Medium Leaf)",             period:"Maj–Aug", interval:"Var 3–4 v",     bokashi:2, nassle:2, hons:2, note:"Gynnas av kväverik gödsling" },
+  { emoji:"🌿", name:"Pepparmynta",                       period:"Maj–Aug", interval:"Var 4 v",       bokashi:2, nassle:2, hons:1, note:"Stark smak gynnas av lite stress" },
+  { emoji:"🌿", name:"Persilja (Moskrul 2)",              period:"Maj–Aug", interval:"Var 3 v",       bokashi:2, nassle:2, hons:2, note:"Nässelvatten ger fint lövverk" },
+  { emoji:"🍓", name:"Jordgubbar (Mara de Bois)",         period:"Maj–Jul", interval:"Var 2 v",       bokashi:2, nassle:2, hons:3, note:"Hönsgödsel tidigt, bokashi-te under bärning" },
+  { emoji:"🍓", name:"Jordgubbar (Ostara)",               period:"Maj–Aug", interval:"Var 2 v",       bokashi:2, nassle:2, hons:3, note:"Ostara är remontant – bär från juni till frost" },
+  { emoji:"🌸", name:"Rosenskära",                        period:"Jun–Aug", interval:"Var 4 v",       bokashi:1, nassle:1, hons:1, note:"Blommar bättre i mager jord" },
+  { emoji:"🌾", name:"Pampagräs",                         period:"Jun–Aug", interval:"Var 4 v",       bokashi:2, nassle:1, hons:2, note:"Fokus på kväve för grönmassa" },
+  { emoji:"🌺", name:"Kinesisk aster",                    period:"Jun–Aug", interval:"Var 2–3 v",     bokashi:2, nassle:2, hons:2, note:"Regelbunden gödsling ger fler blommor" },
+  { emoji:"💜", name:"Lavendel",                          period:"Jun–Jul", interval:"1×/säsong",     bokashi:1, nassle:0, hons:1, note:"Mager jord – annars sämre doft" },
+  { emoji:"🌻", name:"Ringblomma",                        period:"Jun–Aug", interval:"Var 3–4 v",     bokashi:2, nassle:1, hons:1, note:"Lite bokashi-te räcker" },
+  { emoji:"🌿", name:"Dill (Como)",                       period:"Jun–Jul", interval:"Var 3 v",       bokashi:2, nassle:2, hons:1, note:"Nässelvatten ger bra skott" },
+  { emoji:"🌿", name:"Bladdill (Bouquet)",                period:"Jun–Jul", interval:"Var 3 v",       bokashi:2, nassle:2, hons:1, note:"Nässelvatten ger bra skott" },
+  { emoji:"🥬", name:"Plocksallat (Rekord)",              period:"Maj–Aug", interval:"Var 2 v",       bokashi:3, nassle:3, hons:2, note:"Kväveälskare – gärna nässelvatten" },
+  { emoji:"🥬", name:"Plocksallat (Black Seeded Simpson)",period:"Maj–Aug", interval:"Var 2 v",       bokashi:3, nassle:3, hons:2, note:"Täta skördar kräver regelbunden gödsling" },
+  { emoji:"🟢", name:"Märgärt (Lincoln)",                 period:"Jun–Aug", interval:"Var 4 v",       bokashi:2, nassle:1, hons:2, note:"Fixar kväve – gödsel ger mer baljor" },
+  { emoji:"🌿", name:"Krasse",                            period:"Maj–Aug", interval:"Var 4 v",       bokashi:1, nassle:1, hons:1, note:"Trivs i mager jord" },
+  { emoji:"🌼", name:"Tagetes (Lågväxande)",              period:"Jun–Aug", interval:"Var 3–4 v",     bokashi:2, nassle:1, hons:2, note:"Måttlig gödsling – blommar länge" },
+  { emoji:"🌼", name:"Tagetes (Högväxande)",              period:"Jun–Aug", interval:"Var 3–4 v",     bokashi:2, nassle:2, hons:2, note:"Något mer näring än lågväxande sorter" },
+];
+
+/* --- 5. DAGBOK (fliken "Dagbok") ---
+   Ett år i taget. Lämna "" (tomt) för det som inte gäller.
+   Lägg till ett nytt år genom att kopiera hela 2026-blocket. */
+const DIARY = {
+  2026: [
+    { plant:"🍅 Tomat",       variety:"Promyk",               forcedDate:"14 mar", sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 12 dag", harvest:"", note:"Fick ödem, troligen pga övervattning / ojämn vattning och torka. Bladen krullade ihop sig och torkade till slut, med vit hård beläggning på undersidan." },
+    { plant:"🍅 Busktomat",   variety:"Balkonzauber",         forcedDate:"14 mar", sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 12 dag", harvest:"", note:"" },
+    { plant:"🥒 Druvgurka",   variety:"Vorgebirgstrauben",    forcedDate:"14 mar", sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 8 dag",  harvest:"", note:"" },
+    { plant:"🌿 Basilika",    variety:"Genovese",             forcedDate:"14 mar", sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 3 v",    harvest:"", note:"" },
+    { plant:"🌱 Gräslök",     variety:"Medium Leaf",          forcedDate:"14 mar", sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 3 v",    harvest:"", note:"" },
+    { plant:"🌱 Gräslök",     variety:"Medium Leaf",          forcedDate:"",       sownDate:"15 maj", plantedDate:"",       fertilizeFreq:"Var 3 v",    harvest:"", note:"" },
+    { plant:"🌿 Krondill",    variety:"Como",                 forcedDate:"",       sownDate:"15 maj", plantedDate:"",       fertilizeFreq:"Var 3 v",    harvest:"", note:"" },
+    { plant:"🌿 Persilja",    variety:"Moskrul 2",            forcedDate:"14 mar", sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 3 v",    harvest:"", note:"" },
+    { plant:"🌿 Pepparmynta", variety:"–",                    forcedDate:"14 mar", sownDate:"",       plantedDate:"15 maj", fertilizeFreq:"Var 4 v",    harvest:"", note:"" },
+    { plant:"🍓 Jordgubbar",  variety:"Mara de Bois",         forcedDate:"",       sownDate:"",       plantedDate:"15 maj", fertilizeFreq:"Var 2 v",    harvest:"", note:"" },
+    { plant:"🍓 Jordgubbar",  variety:"Ostara",               forcedDate:"",       sownDate:"",       plantedDate:"15 maj", fertilizeFreq:"Var 2 v",    harvest:"", note:"" },
+    { plant:"🥬 Plocksallat", variety:"Rekord",               forcedDate:"",       sownDate:"9 maj",  plantedDate:"",       fertilizeFreq:"Var 2 v",    harvest:"", note:"" },
+    { plant:"🥬 Plocksallat", variety:"Black Seeded Simpson", forcedDate:"",       sownDate:"9 maj",  plantedDate:"",       fertilizeFreq:"Var 2 v",    harvest:"", note:"" },
+    { plant:"🌿 Bladdill",    variety:"Bouquet",              forcedDate:"",       sownDate:"9 maj",  plantedDate:"",       fertilizeFreq:"Var 3 v",    harvest:"", note:"" },
+    { plant:"🟢 Märgärt",     variety:"Lincoln",              forcedDate:"3 maj",  sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 4 v",    harvest:"", note:"" },
+    { plant:"🌻 Ringblomma",  variety:"Mormors",              forcedDate:"3 maj",  sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 4 v",    harvest:"", note:"" },
+    { plant:"🌼 Tagetes",     variety:"Lågväxande",           forcedDate:"3 maj",  sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 3–4 v",  harvest:"", note:"" },
+    { plant:"🌼 Tagetes",     variety:"Högväxande",           forcedDate:"3 maj",  sownDate:"",       plantedDate:"",       fertilizeFreq:"Var 3–4 v",  harvest:"", note:"" },
+  ],
+
+  // 2027 är förberett. Fyll i rader nedan på samma sätt som 2026.
+  // Kopiera en rad från 2026, klistra in här och ändra datumen.
+  // (Tomma "" betyder att fältet inte fyllts i ännu.)
+  2027: [
+    { plant:"🍅 Tomat",       variety:"Promyk",               forcedDate:"",       sownDate:"",       plantedDate:"",       fertilizeFreq:"",           harvest:"", note:"" },
+  ],
+};
+
+/* --- 6. RUBRIK & PLATSINFO (visas högst upp på sidan) --- */
+const SITE = {
+  eyebrow: "Bandhagen · Stockholm",
+  title:   "Balkongträdgård",
+  sub:     "Sydostläge · Plan 4 · ☀️ Sol 06:00–14:00",
+};
+
+/* ════════════════════════════════════════════════════════════════
+   SLUT PÅ DATA
+   ════════════════════════════════════════════════════════════════ */
+</script>
+
+<!-- Länk till koden som ritar upp sidan (filen skript.js i samma mapp) -->
+<script src="skript.js"></script>
+
+</body>
+</html>

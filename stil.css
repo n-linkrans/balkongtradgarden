@@ -1,0 +1,218 @@
+/* ============================================================
+   BALKONGTRÄDGÅRD – stil.css
+   Här bor allt UTSEENDE: färger, storlekar, layout, tema.
+   Vill du byta en färg? Ändra den i :root längst ner.
+   ============================================================ */
+
+/* ---- Grundinställningar ---- */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+/* Sidan scrollar på <html>. overflow-x ligger HÄR (inte på body),
+   annars blir body en egen scroll-container som bryter sticky-headern.
+   scrollbar-gutter reserverar plats så bredden inte "hoppar". */
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+body {
+  font-family: Georgia, serif;
+  background: var(--bg);
+  color: var(--ink);
+  background-image: radial-gradient(circle at 50% 0%, rgba(90,62,8,0.04), transparent 60%);
+}
+#app {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  box-shadow: 0 0 40px rgba(90,62,8,0.06);
+}
+
+/* ---- Responsivt: dator, surfplatta, mobil ---- */
+@media (min-width:768px)  { #app { max-width:860px; box-shadow:0 0 60px rgba(90,62,8,0.09); } }
+@media (min-width:1100px) { #app { max-width:900px; box-shadow:0 0 80px rgba(90,62,8,0.10); } }
+@media (max-width:600px)  { #app { max-width:100%; box-shadow:none; } body { background-image:none; } }
+@media (pointer:coarse)   { button { min-height:40px; } }
+
+/* ---- Snygga rullningslister ---- */
+::-webkit-scrollbar { height:8px; width:8px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background:var(--borderDark); }
+
+/* ---- Sidhuvud ---- */
+.header { background:var(--card); border-bottom:1px solid var(--border); padding:18px 18px 14px; }
+.header-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.header-eyebrow { font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--inkMid); margin-bottom:5px; font-family:monospace; }
+.header-title { font-size:24px; font-weight:700; color:var(--ink); font-style:italic; line-height:1; }
+.header-sub { font-size:12px; color:var(--inkMid); margin-top:5px; font-style:italic; }
+.theme-btn {
+  background:none; border:1px solid var(--border); border-radius:20px; padding:6px 14px;
+  cursor:pointer; font-size:11px; color:var(--inkMid); font-family:monospace; flex-shrink:0; margin-top:4px;
+}
+
+/* ---- Flikar ---- */
+.tabs { background:var(--card); border-bottom:1px solid var(--border); display:flex; }
+.tab-btn {
+  flex:1; min-width:0; padding:10px 4px; border:none; cursor:pointer;
+  background:transparent; color:var(--inkMid); border-bottom:2px solid transparent;
+  font-family:Georgia,serif; transition:all 0.15s;
+}
+.tab-btn.active { background:var(--bg); color:var(--accent); border-bottom:2px solid var(--accent); }
+.tab-btn .icon { font-size:16px; display:block; margin-bottom:1px; }
+.tab-btn .lbl { font-size:9px; font-family:monospace; letter-spacing:0.05em; text-transform:uppercase; }
+
+/* ---- Återanvändbara delar ---- */
+.tab-pane { padding:16px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px 14px; }
+.tag {
+  font-size:10px; padding:2px 8px; border-radius:10px; font-family:monospace;
+  letter-spacing:0.05em; text-transform:uppercase; font-weight:700; border:1px solid;
+}
+.legend-row { display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--inkMid); }
+.legend-dot { width:8px; height:8px; border-radius:50%; }
+.legend-sq  { width:12px; height:12px; border-radius:3px; opacity:0.85; }
+.hint { margin-left:auto; font-size:10px; color:var(--inkMid); font-style:italic; }
+.ell { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* ---- Tabeller (Plantor, Gödsling, Dagbok) ---- */
+/* Wrappen scrollar i sidled när tabellen är bredare än sidan,
+   så den aldrig sticker ut. Sticky-headern fungerar ändå tack
+   vare att body inte längre är en egen scroll-container
+   (overflow-x ligger på <html>, se längst upp). */
+.tbl-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+.tbl { border:1px solid var(--border); border-radius:8px; }
+
+/* ---- Sökruta ovanför tabeller ---- */
+.tbl-search {
+  display:flex; align-items:center; gap:8px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:8px; padding:7px 12px; margin-bottom:10px;
+}
+.tbl-search-icon { font-size:13px; opacity:0.6; flex-shrink:0; }
+.tbl-search-input {
+  flex:1; min-width:0; border:none; background:transparent;
+  font-family:Georgia,serif; font-size:13px; color:var(--ink);
+  outline:none; padding:2px 0;
+}
+.tbl-search-input::placeholder { color:var(--inkFaint); font-style:italic; }
+.tbl-search-clear {
+  border:none; background:transparent; cursor:pointer;
+  color:var(--inkMid); font-size:13px; padding:2px 6px;
+  border-radius:50%; flex-shrink:0; line-height:1;
+}
+.tbl-search-clear:hover { background:var(--bgAlt); color:var(--ink); }
+
+.tbl-head {
+  display:grid; background:var(--bgAlt); border-bottom:2px solid var(--border);
+  /* Fast tabellhuvud sköts med JavaScript (se skript.js), inte med
+     position:sticky – det fungerar inte ihop med sidledsscroll. */
+  border-top-left-radius:8px; border-top-right-radius:8px;
+}
+.tbl-head > div {
+  position:relative; padding:8px 10px; font-size:10px; color:var(--inkMid);
+  letter-spacing:0.08em; text-transform:uppercase; font-family:monospace;
+  cursor:pointer; user-select:none; display:flex; align-items:center; gap:3px;
+}
+.tbl-head > div.sorted { color:var(--accent); }
+.tbl-head .arrow { margin-left:3px; opacity:0.3; font-size:10px; }
+.tbl-head .arrow.on { opacity:1; }
+.tbl-row { display:grid; align-items:center; }
+.tbl-row.alt0 { background:var(--card); }
+.tbl-row.alt1 { background:var(--bgAlt); }
+.tbl-row:not(:last-child) { border-bottom:1px solid var(--border); }
+.tbl-row:last-child { border-bottom-left-radius:8px; border-bottom-right-radius:8px; }
+.tbl-row > div { padding:10px; overflow:hidden; }
+.resize-handle {
+  position:absolute; right:-3px; top:0; bottom:0; width:6px; cursor:col-resize;
+  display:flex; align-items:center; justify-content:center; z-index:10;
+}
+.resize-handle > div { width:2px; height:60%; background:var(--borderDark); border-radius:1px; }
+
+/* ---- Anteckningscell + modal (Dagbok) ---- */
+.note-cell { text-decoration:underline dotted; text-underline-offset:2px; }
+.note-cell:hover { color:var(--accent) !important; }
+.note-modal-overlay {
+  position:fixed; inset:0; background:rgba(20,16,8,0.55);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px; z-index:1000;
+}
+.note-modal {
+  background:var(--card); color:var(--ink); border:1px solid var(--border);
+  border-radius:10px; max-width:420px; width:100%; max-height:80vh; overflow:auto;
+  box-shadow:0 12px 40px rgba(20,16,8,0.35);
+}
+.note-modal-head {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:14px 16px; border-bottom:1px solid var(--border);
+}
+.note-modal-title {
+  font-family:Georgia,serif; font-style:italic; font-weight:700;
+  font-size:14px; color:var(--ink);
+}
+.note-modal-close {
+  background:none; border:1px solid var(--border); border-radius:50%;
+  width:28px; height:28px; cursor:pointer; color:var(--inkMid);
+  font-size:13px; flex-shrink:0; line-height:1;
+}
+.note-modal-body {
+  padding:16px; font-size:13px; line-height:1.7; color:var(--inkMid);
+}
+
+/* ---- Karta ---- */
+.map {
+  position:relative; width:100%; padding-bottom:90%; background:var(--mapBg);
+  border:2px solid var(--wallBorder); border-radius:10px; overflow:hidden;
+}
+.map .abs { position:absolute; }
+.zone {
+  position:absolute; border-radius:4px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:2px 4px; text-align:center;
+  overflow:hidden; transition:all 0.18s; cursor:pointer;
+}
+.zone.fixed { cursor:default; }
+.zone .z-label { font-size:clamp(7px,1.5vw,10px); font-weight:600; color:var(--ink);
+                 line-height:1.2; font-family:Georgia,serif; font-style:italic; }
+.zone.fixed .z-label { color:var(--inkMid); font-style:normal; }
+.zone .z-sub { font-size:clamp(5px,1vw,8px); color:var(--inkMid); margin-top:1px; line-height:1.3; }
+.zone .z-tag { font-size:clamp(5px,0.9vw,7px); margin-top:2px; padding:1px 4px; border-radius:3px; }
+.circle {
+  position:absolute; aspect-ratio:1/1; border-radius:50%; cursor:pointer;
+  transition:all 0.18s; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+.map-label {
+  position:absolute; font-family:monospace; text-transform:uppercase;
+  letter-spacing:0.18em; color:var(--inkMid); white-space:nowrap; pointer-events:none;
+}
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+
+/* ---- Färgtema. ÄNDRA FÄRGER HÄR. ---- */
+:root {
+  --bg:#faf7f0; --bgAlt:#f0ece0; --card:#ffffff;
+  --border:#ccc0a0; --borderDark:#a89a72;
+  --ink:#1e1a0e; --inkMid:#4a3e26; --inkFaint:#6e624a;
+  --accent:#5a3e08; --accentBg:#5a3e0810;
+  --green:#244e14; --greenBg:#244e1410;
+  --sunFull:#b07810; --sunPart:#984e10; --sunShade:#2858a0;
+  --mapBg:#edeae0; --wallDark:#b8b098; --wallLight:#d8d0b8;
+  --wallBorder:#7a7050; --wallText:#f0ece0;
+}
+body.dark {
+  --bg:#1c1a16; --bgAlt:#242118; --card:#272420;
+  --border:#3d3828; --borderDark:#524c38;
+  --ink:#ede5cc; --inkMid:#b8a880; --inkFaint:#7a7058;
+  --accent:#d4b050; --accentBg:#d4b05014;
+  --green:#5aaa48; --greenBg:#5aaa4814;
+  --sunFull:#b07810; --sunPart:#984e10; --sunShade:#2858a0;
+  --mapBg:#1a1814; --wallDark:#1a1610; --wallLight:#2e2a20;
+  --wallBorder:#524c38; --wallText:#b8a880;
+}
