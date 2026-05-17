@@ -130,21 +130,42 @@ function buildTable(cols, rows, opts){
       }
       if (i < cols.length-1){
         const handle = el("div", { class:"resize-handle" }, el("div"));
-        handle.addEventListener("mousedown", function(e){
+        // Hämtar x-koordinat från antingen mus- eller pekhändelse
+        function clientX(ev){
+          return ev.touches && ev.touches[0]
+            ? ev.touches[0].clientX
+            : (ev.changedTouches && ev.changedTouches[0]
+                ? ev.changedTouches[0].clientX : ev.clientX);
+        }
+        function startDrag(e){
           e.preventDefault(); e.stopPropagation();
-          const startX = e.clientX, startW = widths[i];
+          const startX = clientX(e), startW = widths[i];
           function move(me){
-            widths[i] = Math.max(60, startW + (me.clientX - startX));
+            if (me.cancelable) me.preventDefault();
+            widths[i] = Math.max(60, startW + (clientX(me) - startX));
             tbl.style.minWidth = widths.reduce((a,b)=>a+b,0)+"px";
             head.style.gridTemplateColumns = tmpl();
             Array.prototype.forEach.call(body.children, function(rw){
               rw.style.gridTemplateColumns = tmpl();
             });
           }
-          function up(){ window.removeEventListener("mousemove",move); window.removeEventListener("mouseup",up); }
+          function up(){
+            window.removeEventListener("mousemove",move);
+            window.removeEventListener("mouseup",up);
+            window.removeEventListener("touchmove",move);
+            window.removeEventListener("touchend",up);
+            window.removeEventListener("touchcancel",up);
+          }
           window.addEventListener("mousemove", move);
           window.addEventListener("mouseup", up);
-        });
+          // passive:false krävs för att preventDefault ska stoppa
+          // sidans scroll medan man drar på pekskärm
+          window.addEventListener("touchmove", move, { passive:false });
+          window.addEventListener("touchend", up);
+          window.addEventListener("touchcancel", up);
+        }
+        handle.addEventListener("mousedown", startDrag);
+        handle.addEventListener("touchstart", startDrag, { passive:false });
         h.appendChild(handle);
       }
       head.appendChild(h);
@@ -677,9 +698,9 @@ function renderSchemaTab(){
 function renderGodslingTab(){
   const pane = el("div", { class:"tab-pane" });
   const methods = [
-    { key:"bokashi", label:"Bokashi-te",   color:"#7a4e20" },
     { key:"nassle",  label:"Nässelvatten", color:"#245e14" },
     { key:"hons",    label:"Hönsgödsel",   color:"#7a5e08" },
+    { key:"bokashi", label:"Bokashi-te",   color:"#7a4e20" },
   ];
 
   const start = el("div", { class:"card", style:{ marginBottom:"14px",
@@ -702,9 +723,9 @@ function renderGodslingTab(){
   const cols = [
     { key:"name",   label:"Växt",   w:180 },
     { key:"period", label:"Period", w:72, align:"center" },
-    { key:"bokashi",label:"🫙",     w:52, align:"center" },
     { key:"nassle", label:"🌱",     w:52, align:"center" },
     { key:"hons",   label:"🐔",     w:52, align:"center" },
+    { key:"bokashi",label:"🫙",     w:52, align:"center" },
   ];
 
   function render(p, key){
@@ -734,9 +755,9 @@ function renderGodslingTab(){
 
   const tips = el("div", { style:{ display:"flex", flexDirection:"column",
     gap:"8px", marginTop:"14px" } });
-  [["🫙","Bokashi-te","#7a4e20","Späd 1:100 (ca 1 msk per liter). Vattna direkt i jorden – undvik bladen."],
-   ["🌱","Nässelvatten","#245e14","Späd 1:10. Rikt på kväve – perfekt för bladgrönsaker och tomater under tillväxt."],
-   ["🐔","Hönsgödsel","#7a5e08","Strö runt plantan, vattna in ordentligt. Långsam näring – bra som grundgödsling i maj."]
+  [["🌱","Nässelvatten","#245e14","Späd 1:10. Rikt på kväve – perfekt för bladgrönsaker och tomater under tillväxt."],
+   ["🐔","Hönsgödsel","#7a5e08","Strö runt plantan, vattna in ordentligt. Långsam näring – bra som grundgödsling i maj."],
+   ["🫙","Bokashi-te","#7a4e20","Späd 1:100 (ca 1 msk per liter). Vattna direkt i jorden – undvik bladen."]
   ].forEach(function(b){
     const c = el("div", { class:"card", style:{ borderLeft:"3px solid "+b[2] } });
     c.appendChild(el("div", { style:{ fontSize:"11px", fontWeight:"700", color:b[2],
