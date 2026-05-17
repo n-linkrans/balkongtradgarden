@@ -139,6 +139,11 @@ body {
 .resize-handle {
   position:absolute; right:-3px; top:0; bottom:0; width:6px; cursor:col-resize;
   display:flex; align-items:center; justify-content:center; z-index:10;
+  touch-action:none; /* låter eget kod-drag styra istället för sidscroll */
+}
+/* Bredare gripyta på pekskärm (iPhone/iPad) så den går att träffa */
+@media (pointer:coarse){
+  .resize-handle { right:-9px; width:18px; }
 }
 .resize-handle > div { width:2px; height:60%; background:var(--borderDark); border-radius:1px; }
 
